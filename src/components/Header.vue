@@ -14,14 +14,27 @@
         <b-nav-item to="/">Home</b-nav-item>
         <b-nav-item to="/about">About</b-nav-item>
         <b-nav-item to="/recipes">Recipes</b-nav-item>
+        <b-nav-item v-if="!isLoggedIn" to="/login">Login</b-nav-item>
+        <b-nav-item v-if="isLoggedIn" @click="logout()">Logout</b-nav-item>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
 </template>
 
 <script>
+  import {mapState} from 'vuex';
   export default {
-
+    methods: {
+      logout() {
+        this.$store.dispatch('logout');
+      }
+    },
+    computed: {
+      ...mapState(['userProfile']),
+      isLoggedIn() {
+        return Object.keys(this.userProfile).length > 1
+      }
+    }
   }
 </script>
 
