@@ -1,5 +1,8 @@
 import Vue from 'vue'
 import App from './App.vue'
+import '@kouts/vue-modal/dist/vue-modal.css';
+
+import VueModal from '@kouts/vue-modal';
 
 import babelPolyfill from 'babel-polyfill';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
@@ -16,6 +19,8 @@ import {auth} from './firebase';
 Vue.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin
 Vue.use(IconsPlugin)
+
+Vue.component('Modal', VueModal);
 
 // Potrebno instalirati babel-polyfill i importovati
 

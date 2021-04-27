@@ -72,6 +72,36 @@ export const store = new Vuex.Store({
 
       router.push('/login');
 
+    },
+
+    // ! Meat Recipes Methods
+    // * Get All Recipes Methods
+    async getMeatCollection({state}) {
+
+      let meatRecipesRef = fb.meatRecipesCollection;
+      try {
+        let allMeatRecipesSnapshot = await meatRecipesRef.get();
+        state.meatCollection = [];
+        allMeatRecipesSnapshot.forEach(doc => {
+          const singleMeatRecipe = doc.data();
+          singleMeatRecipe["id"] = doc.id;
+          state.meatCollection.push(singleMeatRecipe);
+          console.log(singleMeatRecipe);
+        })
+      } catch (error) {
+        console.log(error);
+      }
+
+    },
+
+    async deleteMeatRecipe({state}, id) {
+      try {
+        await fb.meatRecipesCollection.doc(id).delete();
+        alert('Successfully deleted Recipe');
+      } catch(error) {
+        console.log(error);
+      }
     }
+
   }
 })
