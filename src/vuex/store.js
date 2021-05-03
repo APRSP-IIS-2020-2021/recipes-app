@@ -101,6 +101,18 @@ export const store = new Vuex.Store({
       } catch(error) {
         console.log(error);
       }
+    },
+
+    async updateMeatRecipe({}, itemForUpdate) {
+      try {
+        await fb.meatRecipesCollection.doc(itemForUpdate.id).update({
+          name: itemForUpdate.name,
+          description: itemForUpdate.description,
+          src: itemForUpdate.src
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
 
   }
