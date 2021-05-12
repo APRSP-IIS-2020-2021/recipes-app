@@ -110,9 +110,35 @@ export const store = new Vuex.Store({
           description: itemForUpdate.description,
           src: itemForUpdate.src
         });
+        alert("Recipe was updated!");
       } catch (error) {
         console.log(error);
       }
+    },
+
+    async createMeatRecipe({state}, payload) {
+      const meatRecipe = {
+        name: payload.name,
+        description: payload.description,
+        userId: fb.auth.currentUser.uid,
+        userName: state.userProfile.email,
+        createdOn: new Date()
+      };
+      let imageUrl;
+      let key;
+      let storageRef = fb.storage;
+      const data = await fb.meatRecipesCollection.add(meatRecipe);
+      key = data.id;
+      const fileName = payload.src.name;
+      const ext = fileName.slice(fileName.lastIndexOf("."));
+      const fileData = await storageRef
+        .child("meatRecipesImages/" + key + "." + ext)
+        .put(payload.src);
+      imageUrl = await fileData.ref.getDownloadURL();
+      await fb.meatRecipesCollection.doc(key).get();
+      await fb.meatRecipesCollection.doc(key).update({
+        src: imageUrl
+      });
     }
 
   }

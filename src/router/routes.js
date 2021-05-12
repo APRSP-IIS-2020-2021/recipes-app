@@ -12,11 +12,11 @@ const routes = [
   {path: '/', component: Home},
   {path: '/home', component: Home},
   {path: '/about', component: About},
-  {path: '/recipes', component: Recipes},
-  {path: '/recipes/meat-recipes', component: MeatRecipe},
-  {path: '/recipes/veggie-recipes', component: VeggieRecipe},
-  {path: '/recipes/pastas-recipes', component: PastaRecipe},
-  {path: '/recipes/desserts-recipes', component: DessertsRecipe},
+  {path: '/recipes', component: Recipes, meta: {requiresAuth: true}},
+  {path: '/recipes/meat-recipes', component: MeatRecipe, meta: {requiresAuth: true}},
+  {path: '/recipes/veggie-recipes', component: VeggieRecipe, meta: {requiresAuth: true}},
+  {path: '/recipes/pastas-recipes', component: PastaRecipe, meta: {requiresAuth: true}},
+  {path: '/recipes/desserts-recipes', component: DessertsRecipe, meta: {requiresAuth: true}},
   {path: '/login', component: Login},
   {path: '/register', component: Register}
 ];

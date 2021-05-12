@@ -1,5 +1,12 @@
 <template>
   <div class="recipes-wrapper">
+    <div class="search-bar-wrapper">
+      <input
+        class="search-bar"
+        v-model="filterText"
+        placeholder="Search for Recipes..."
+        type="text">
+    </div>
     <div class="all-recipes">
       <div class="add-recipe-button-wrapper">
         <button @click="onAddIcon" type="button" class="btn btn-warning">
@@ -22,10 +29,9 @@
         </button>
       </div>
       <div
-        v-for="recipe in meatCollection"
+        v-for="recipe in filteredRecipes"
         :key="recipe.id"
-        class="single-recipe-card"
-      >
+        class="single-recipe-card">
         <h1 class="recipe-name">{{ recipe.name }}</h1>
         <br />
         <img class="recipe-img" :src="recipe.src" />
@@ -127,7 +133,7 @@
           type="text">
         <h3 class="modal-content-name">Recipe Image</h3>
         <img
-          style="border: none"
+          class="image-preview"
           :src="recipeAdded.src">
         <button
           @click="onPickFile()"
@@ -167,6 +173,8 @@ import { mapState } from "vuex";
 export default {
   data() {
     return {
+      previewImage: null,
+      filterText: '',
       itemForDelete: {},
       itemForInfo: {},
       itemForUpdate: {},
@@ -185,6 +193,22 @@ export default {
     };
   },
   methods: {
+    onFilePicked(event) {
+      const files = event.target.files;
+      let fileName = files[0].name;
+      if(fileName.lastIndexOf('.') <= 0) {
+        alert('Please provide image');
+      }
+      const fileReader = new FileReader();
+      fileReader.addEventListener('load', () => {
+        this.recipeAdded.src = fileReader.result;
+      });
+      fileReader.readAsDataURL(files[0]);
+      this.previewImage = files[0];
+    },
+    onPickFile() {
+      this.$refs.fileInput.click();
+    },
     onDeleteIcon(recipe) {
       this.itemForDelete = recipe;
       this.showDeleteModal = true;
@@ -205,7 +229,19 @@ export default {
     async confirmUpdate() {
       await this.$store.dispatch("updateMeatRecipe", this.itemForUpdate);
       this.showUpdateModal = false;
-      alert("Recipe was updated!");
+    },
+    async confirmAdd() {
+      if(!this.previewImage) {
+        return
+      }
+      const meatRecipe = {
+        name: this.recipeAdded.name,
+        src: this.previewImage,
+        description: this.recipeAdded.description
+      }
+      await this.$store.dispatch('createMeatRecipe', meatRecipe);
+      this.$store.dispatch('getMeatCollection');
+      this.showAddModal = false;
     },
     closeDeleteModal() {
       this.showDeleteModal = false;
@@ -214,6 +250,9 @@ export default {
       Object.assign(this.itemForUpdate, this.copyOfItemForUpdate);
       this.showUpdateModal = false;
     },
+    closeAddModal() {
+      this.showAddModal = false;
+    },
     showInfo(recipe) {
       this.itemForInfo = recipe;
       this.showInfoModal = true;
@@ -221,6 +260,12 @@ export default {
   },
   computed: {
     ...mapState(["meatCollection"]),
+    filteredRecipes() {
+      return this.meatCollection.filter((item) => {
+        let name = item.name.toLowerCase();
+        return name.match(this.filterText);
+      })
+    }
   },
   mounted() {
     this.$store.dispatch("getMeatCollection");
@@ -236,13 +281,19 @@ export default {
 }
 .recipes-wrapper {
   background: rgb(243, 233, 206);
-  height: 91.5vh;
+  height: 100%;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 .all-recipes {
-  padding: 50px 100px;
-  padding-top: 200px;
+  padding: 50px 20px;
+  padding-top: 100px;
   display: flex;
+  width: 100%;
+  height: 100%;
   flex-direction: row;
   justify-content: center;
   align-items: center;
@@ -360,5 +411,19 @@ export default {
   width: 50%;
   margin-top: 10px;
   align-self: center;
+}
+.image-preview {
+  border: none;
+  width: 220px;
+  height: 220px;
+  align-self:center
+}
+.search-bar {
+  margin-top: 100px;
+  width: 400px;
+  height: 100px;
+  border: 2px solid black;
+  text-align: center;
+  /* padding-left: 120px; */
 }
 </style>
