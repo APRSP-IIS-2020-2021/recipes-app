@@ -74,8 +74,9 @@ export const store = new Vuex.Store({
 
     },
 
-    // ! Meat Recipes Methods
-    // * Get All Recipes Methods
+    // ! MEAT RECIPES METHODS
+
+    // * Get All Meat Recipes Method
     async getMeatCollection({state}) {
 
       let meatRecipesRef = fb.meatRecipesCollection;
@@ -91,9 +92,9 @@ export const store = new Vuex.Store({
       } catch (error) {
         console.log(error);
       }
-
     },
 
+    // * Delete Meat Recipe Method
     async deleteMeatRecipe({state}, id) {
       try {
         await fb.meatRecipesCollection.doc(id).delete();
@@ -103,6 +104,7 @@ export const store = new Vuex.Store({
       }
     },
 
+    // * Update Meat Recipe Method
     async updateMeatRecipe({}, itemForUpdate) {
       try {
         await fb.meatRecipesCollection.doc(itemForUpdate.id).update({
@@ -116,6 +118,7 @@ export const store = new Vuex.Store({
       }
     },
 
+    // * Create new Meat Recipe Method
     async createMeatRecipe({state}, payload) {
       const meatRecipe = {
         name: payload.name,
@@ -139,7 +142,216 @@ export const store = new Vuex.Store({
       await fb.meatRecipesCollection.doc(key).update({
         src: imageUrl
       });
-    }
+    },
 
+    // ! DESSERT RECIPES METHODS
+
+    // * Get All Dessert Recipes Method
+    async getDessertCollection({state}) {
+
+      let dessertRecipesRef = fb.dessertRecipesCollection;
+      try {
+        let allDessertRecipesSnapshot = await dessertRecipesRef.get();
+        state.dessertCollection = [];
+        allDessertRecipesSnapshot.forEach(doc => {
+          const singleDessertRecipe = doc.data();
+          singleDessertRecipe["id"] = doc.id;
+          state.dessertCollection.push(singleDessertRecipe);
+          console.log(singleDessertRecipe);
+        })
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    // * Delete Dessert Recipe Method
+    async deleteDessertRecipe({state}, id) {
+      try {
+        await fb.dessertRecipesCollection.doc(id).delete();
+        alert('Successfully deleted Recipe');
+      } catch(error) {
+        console.log(error);
+      }
+    },
+
+    // * Update Dessert Recipe Method
+    async updateDessertRecipe({}, itemForUpdate) {
+      try {
+        await fb.dessertRecipesCollection.doc(itemForUpdate.id).update({
+          name: itemForUpdate.name,
+          description: itemForUpdate.description,
+          src: itemForUpdate.src
+        });
+        alert("Recipe was updated!");
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    // * Create new Dessert Recipe Method
+    async createDessertRecipe({state}, payload) {
+      const dessertRecipe = {
+        name: payload.name,
+        description: payload.description,
+        userId: fb.auth.currentUser.uid,
+        userName: state.userProfile.email,
+        createdOn: new Date()
+      };
+      let imageUrl;
+      let key;
+      let storageRef = fb.storage;
+      const data = await fb.dessertRecipesCollection.add(dessertRecipe);
+      key = data.id;
+      const fileName = payload.src.name;
+      const ext = fileName.slice(fileName.lastIndexOf("."));
+      const fileData = await storageRef
+        .child("dessertRecipesImages/" + key + "." + ext)
+        .put(payload.src);
+      imageUrl = await fileData.ref.getDownloadURL();
+      await fb.dessertRecipesCollection.doc(key).get();
+      await fb.dessertRecipesCollection.doc(key).update({
+        src: imageUrl
+      });
+    },
+
+    // ! VEGGIE RECIPES METHODS
+
+    // * Get All Veggie Recipes Method
+    async getVeggieCollection({state}) {
+
+      let veggieRecipesRef = fb.veggieRecipesCollection;
+      try {
+        let allVeggieRecipesSnapshot = await veggieRecipesRef.get();
+        state.veggieCollection = [];
+        allVeggieRecipesSnapshot.forEach(doc => {
+          const singleVeggieRecipe = doc.data();
+          singleVeggieRecipe["id"] = doc.id;
+          state.veggieCollection.push(singleVeggieRecipe);
+          console.log(singleVeggieRecipe);
+        })
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    // * Delete Veggie Recipe Method
+    async deleteVeggieRecipe({state}, id) {
+      try {
+        await fb.veggieRecipesCollection.doc(id).delete();
+        alert('Successfully deleted Recipe');
+      } catch(error) {
+        console.log(error);
+      }
+    },
+
+    // * Update Veggie Recipe Method
+    async updateVeggieRecipe({}, itemForUpdate) {
+      try {
+        await fb.veggieRecipesCollection.doc(itemForUpdate.id).update({
+          name: itemForUpdate.name,
+          description: itemForUpdate.description,
+          src: itemForUpdate.src
+        });
+        alert("Recipe was updated!");
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    // * Create new Veggie Recipe Method
+    async createVeggieRecipe({state}, payload) {
+      const veggieRecipe = {
+        name: payload.name,
+        description: payload.description,
+        userId: fb.auth.currentUser.uid,
+        userName: state.userProfile.email,
+        createdOn: new Date()
+      };
+      let imageUrl;
+      let key;
+      let storageRef = fb.storage;
+      const data = await fb.veggieRecipesCollection.add(veggieRecipe);
+      key = data.id;
+      const fileName = payload.src.name;
+      const ext = fileName.slice(fileName.lastIndexOf("."));
+      const fileData = await storageRef
+        .child("veggieRecipesImages/" + key + "." + ext)
+        .put(payload.src);
+      imageUrl = await fileData.ref.getDownloadURL();
+      await fb.veggieRecipesCollection.doc(key).get();
+      await fb.veggieRecipesCollection.doc(key).update({
+        src: imageUrl
+      });
+    },
+
+    // ! PASTA RECIPES METHODS
+
+    // * Get All Pasta Recipes Method
+    async getPastaCollection({state}) {
+
+      let pastaRecipesRef = fb.pastaRecipesCollection;
+      try {
+        let allPastaRecipesSnapshot = await pastaRecipesRef.get();
+        state.pastaCollection = [];
+        allPastaRecipesSnapshot.forEach(doc => {
+          const singlePastaRecipe = doc.data();
+          singlePastaRecipe["id"] = doc.id;
+          state.pastaCollection.push(singlePastaRecipe);
+          console.log(singlePastaRecipe);
+        })
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    // * Delete Pasta Recipe Method
+    async deletePastaRecipe({state}, id) {
+      try {
+        await fb.pastaRecipesCollection.doc(id).delete();
+        alert('Successfully deleted Recipe');
+      } catch(error) {
+        console.log(error);
+      }
+    },
+
+    // * Update Pasta Recipe Method
+    async updatePastaRecipe({}, itemForUpdate) {
+      try {
+        await fb.pastaRecipesCollection.doc(itemForUpdate.id).update({
+          name: itemForUpdate.name,
+          description: itemForUpdate.description,
+          src: itemForUpdate.src
+        });
+        alert("Recipe was updated!");
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    // * Create new Pasta Recipe Method
+    async createPastaRecipe({state}, payload) {
+      const pastaRecipe = {
+        name: payload.name,
+        description: payload.description,
+        userId: fb.auth.currentUser.uid,
+        userName: state.userProfile.email,
+        createdOn: new Date()
+      };
+      let imageUrl;
+      let key;
+      let storageRef = fb.storage;
+      const data = await fb.pastaRecipesCollection.add(pastaRecipe);
+      key = data.id;
+      const fileName = payload.src.name;
+      const ext = fileName.slice(fileName.lastIndexOf("."));
+      const fileData = await storageRef
+        .child("pastaRecipesImages/" + key + "." + ext)
+        .put(payload.src);
+      imageUrl = await fileData.ref.getDownloadURL();
+      await fb.pastaRecipesCollection.doc(key).get();
+      await fb.pastaRecipesCollection.doc(key).update({
+        src: imageUrl
+      });
+    },
   }
 })

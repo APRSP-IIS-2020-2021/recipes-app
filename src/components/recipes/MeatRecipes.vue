@@ -76,104 +76,49 @@
         </div>
       </div>
     </div>
-    <Modal v-model="showDeleteModal" modalClass="modal-wrapper">
-      <h3>Removing Recipe: {{ itemForDelete.name }}</h3>
-      <div class="delete-action-buttons">
-        <button
-          class="btn btn-primary"
-          @click="confirmDelete(itemForDelete.id)"
-        >
-          Confirm
-        </button>
-        <button class="btn btn-danger" @click="closeDeleteModal">Cancel</button>
-      </div>
-    </Modal>
-    <Modal v-model="showInfoModal" modalClass="modal-wrapper modal-info">
-      <h1>{{ itemForInfo.name }}</h1>
-      <br />
-      <p>{{ itemForInfo.description }}</p>
-    </Modal>
-    <Modal v-model="showUpdateModal" modalClass="modal-wrapper">
-      <h2 class="add__modal-title">Update Recipe</h2>
-      <div class="modal-content">
-        <img :src="itemForUpdate.src" class="preview-image" />
-        <h3 class="modal-content-name">Recipe Name</h3>
-        <input
-          class="modal__recipe__name-input"
-          type="text"
-          :maxlength="25"
-          v-model.lazy="itemForUpdate.name"
-        />
-        <h3 class="modal-content-desc">Recipe Description</h3>
-        <textarea
-          name="desc"
-          class="modal__recipe__desc-textarea"
-          placeholder="Enter Recipe Description"
-          :maxlength="1350"
-          v-model.lazy="itemForUpdate.description"
-        >
-        </textarea>
-      </div>
-      <div class="delete-action-buttons">
-        <button class="btn btn-primary" @click="confirmUpdate(itemForUpdate)">
-          Confirm
-        </button>
-        <button class="btn btn-danger" @click="closeUpdateModal">Cancel</button>
-      </div>
-    </Modal>
-    <Modal v-model="showAddModal" modalClass="modal-wrapper">
-      <h2 class="add__modal-title">Add new Recipe</h2>
-      <div class="modal-content">
-        <h3 class="modal-content-name">Recipe Name</h3>
-        <input
-          placeholder="Enter Recipe Name"
-          class="modal__recipe__name-input"
-          :maxlength="25"
-          v-model="recipeAdded.name"
-          type="text">
-        <h3 class="modal-content-name">Recipe Image</h3>
-        <img
-          class="image-preview"
-          :src="recipeAdded.src">
-        <button
-          @click="onPickFile()"
-          class="upload-image-btn btn btn-light">
-            Upload Image
-        </button>
-        <input
-          ref="fileInput"
-          class="add__modal-image-btn"
-          style="display: none"
-          accept="image/*"
-          type="file"
-          @change="onFilePicked"
-        />
-        <h3 class="modal-content-name">Recipe Description</h3>
-        <textarea
-          placeholder="Enter Recipe Description"
-          class="modal__recipe__desc-textarea"
-          name="desc"
-          id="desc"
-          :maxlength="1350"
-          v-model="recipeAdded.description"
-        />
-      </div>
-      <div class="delete-action-buttons">
-        <button class="btn btn-primary" @click="confirmAdd(recipeAdded)">
-          Confirm
-        </button>
-        <button class="btn btn-danger" @click="closeAddModal">Cancel</button>
-      </div>
-    </Modal>
+    <app-delete-meat-recipe-dialog
+      :showDeleteModal="showDeleteModal"
+      :itemForDelete="itemForDelete"
+      @deleteDialogClosed="showDeleteModal=$event"
+      v-model="showDeleteModal">
+    </app-delete-meat-recipe-dialog>
+    <app-info-meat-recipe-dialog
+      :showInfoModal="showInfoModal"
+      :itemForInfo="itemForInfo"
+      @infoDialogClosed="showInfoModal=$event"
+      v-model="showInfoModal">
+    </app-info-meat-recipe-dialog>
+    <app-update-meat-recipe-dialog
+      :showUpdateModal="showUpdateModal"
+      :itemForUpdate="itemForUpdate"
+      :copyOfItemForUpdate="copyOfItemForUpdate"
+      @originalRecipe="itemForUpdate=$event"
+      @updateDialogClosed="showUpdateModal=$event"
+      v-model="showUpdateModal">
+    </app-update-meat-recipe-dialog>
+    <app-add-meat-recipe-dialog
+      :showAddModal="showAddModal"
+      @addDialogClosed="showAddModal=$event"
+      v-model="showAddModal">
+    </app-add-meat-recipe-dialog>
   </div>
 </template>
 
 <script>
+import DeleteMeatRecipeDialog from '../dialogs/meatRecipes-dialogs/DeleteMeatRecipeDialog.vue';
+import UpdateMeatRecipeDialog from '../dialogs/meatRecipes-dialogs/UpdateMeatRecipeDialog.vue';
+import AddMeatRecipeDialog from '../dialogs/meatRecipes-dialogs/AddMeatRecipeDialog.vue';
+import InfoMeatRecipeDialog from '../dialogs/meatRecipes-dialogs/InfoMeatRecipeDialog.vue';
 import { mapState } from "vuex";
 export default {
+  components: {
+    'app-delete-meat-recipe-dialog': DeleteMeatRecipeDialog,
+    'app-update-meat-recipe-dialog': UpdateMeatRecipeDialog,
+    'app-add-meat-recipe-dialog': AddMeatRecipeDialog,
+    'app-info-meat-recipe-dialog': InfoMeatRecipeDialog
+  },
   data() {
     return {
-      previewImage: null,
       filterText: '',
       itemForDelete: {},
       itemForInfo: {},
@@ -183,32 +128,10 @@ export default {
       showUpdateModal: false,
       showAddModal: false,
       showAddModal: false,
-      copyOfItemForUpdate: {},
-      copyOfItemForAdd: {},
-      recipeAdded: {
-        name: '',
-        src: '',
-        description: ''
-      }
+      copyOfItemForUpdate: {}
     };
   },
   methods: {
-    onFilePicked(event) {
-      const files = event.target.files;
-      let fileName = files[0].name;
-      if(fileName.lastIndexOf('.') <= 0) {
-        alert('Please provide image');
-      }
-      const fileReader = new FileReader();
-      fileReader.addEventListener('load', () => {
-        this.recipeAdded.src = fileReader.result;
-      });
-      fileReader.readAsDataURL(files[0]);
-      this.previewImage = files[0];
-    },
-    onPickFile() {
-      this.$refs.fileInput.click();
-    },
     onDeleteIcon(recipe) {
       this.itemForDelete = recipe;
       this.showDeleteModal = true;
@@ -220,38 +143,6 @@ export default {
     },
     onAddIcon() {
       this.showAddModal = true;
-    },
-    confirmDelete(id) {
-      this.$store.dispatch("deleteMeatRecipe", id);
-      this.closeDeleteModal();
-      this.$store.dispatch("getMeatCollection");
-    },
-    async confirmUpdate() {
-      await this.$store.dispatch("updateMeatRecipe", this.itemForUpdate);
-      this.showUpdateModal = false;
-    },
-    async confirmAdd() {
-      if(!this.previewImage) {
-        return
-      }
-      const meatRecipe = {
-        name: this.recipeAdded.name,
-        src: this.previewImage,
-        description: this.recipeAdded.description
-      }
-      await this.$store.dispatch('createMeatRecipe', meatRecipe);
-      this.$store.dispatch('getMeatCollection');
-      this.showAddModal = false;
-    },
-    closeDeleteModal() {
-      this.showDeleteModal = false;
-    },
-    closeUpdateModal() {
-      Object.assign(this.itemForUpdate, this.copyOfItemForUpdate);
-      this.showUpdateModal = false;
-    },
-    closeAddModal() {
-      this.showAddModal = false;
     },
     showInfo(recipe) {
       this.itemForInfo = recipe;
@@ -274,156 +165,5 @@ export default {
 </script>
 
 <style scoped>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-.recipes-wrapper {
-  background: rgb(243, 233, 206);
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-.all-recipes {
-  padding: 50px 20px;
-  padding-top: 100px;
-  display: flex;
-  width: 100%;
-  height: 100%;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.add-recipe-button-wrapper {
-  padding-top: 30px;
-  margin-right: 15%;
-}
-.btn-warning {
-  color: black;
-  width: 150px !important;
-  height: 100px !important;
-  font-size: 20px;
-  font-family: "Indie Flower", cursive;
-  font-weight: bold;
-}
-.single-recipe-card {
-  background: rgb(248, 192, 107);
-  border: 2px solid black;
-  margin: 0 30px 0 0;
-  padding: 20px 20px;
-  border-radius: 25px;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: center;
-  align-items: center;
-  height: 550px;
-}
-.recipe-name,
-.recipe-show-desc {
-  font-family: "Indie Flower", cursive;
-}
-.recipe-name {
-  font-weight: bolder;
-}
-.recipe-show-desc {
-  margin-top: 40px;
-  font-size: 25px;
-}
-.recipe-show-desc:hover,
-.bi {
-  cursor: pointer;
-}
-.bi {
-  width: 25px;
-  height: 25px;
-}
-.recipe-img {
-  width: 250px;
-  height: 250px;
-  border: 1px solid black;
-}
-.modal-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-.action-buttons {
-  margin-top: 15px;
-}
-.delete-action-buttons {
-  align-self: center;
-  text-align: center;
-  padding: 20px 0;
-}
-.btn {
-  width: 100px;
-  height: 50px;
-}
-.modal-info h1 {
-  font-family: "Indie Flower", cursive;
-  text-align: center;
-}
-.modal-info p {
-  font-family: sans-serif;
-  text-align: justify;
-}
-.add__modal-title {
-  text-align: center;
-  margin-bottom: 5px;
-  font-family: "Indie Flower", cursive;
-  font-weight: bold;
-}
-.preview-image {
-  border: 1px solid black;
-  border-radius: 5px;
-  margin-bottom: 10px;
-}
-.modal-content {
-  border: none !important;
-  padding: 10px 0;
-}
-.modal-content-name,
-.modal-content-desc {
-  font-family: "Indie Flower", cursive;
-  text-align: center;
-  margin-top: 20px;
-}
-.modal__recipe__name-input,
-.modal__recipe__desc-textarea {
-  padding: 5px;
-  font-family: sans-serif;
-}
-.modal__recipe__desc-textarea {
-  height: 200px;
-}
-.modal-content-desc {
-  margin-top: 15px;
-}
-.upload-image-btn {
-  width: 50%;
-  margin-top: 10px;
-  align-self: center;
-}
-.image-preview {
-  border: none;
-  width: 220px;
-  height: 220px;
-  align-self:center
-}
-.search-bar {
-  margin-top: 100px;
-  width: 400px;
-  height: 100px;
-  border: 2px solid black;
-  text-align: center;
-  /* padding-left: 120px; */
-}
+  @import '../../assets/recipes.css';
 </style>

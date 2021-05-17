@@ -1,0 +1,76 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.modal-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* height: 100%; */
+}
+.action-buttons {
+  margin-top: 15px;
+}
+.delete-action-buttons {
+  align-self: center;
+  text-align: center;
+  padding: 20px 0;
+}
+.btn {
+  width: 100px;
+  height: 50px;
+}
+.modal-info h1 {
+  font-family: "Indie Flower", cursive;
+  text-align: center;
+}
+.modal-info p {
+  font-family: sans-serif;
+  text-align: justify;
+}
+.add__modal-title {
+  text-align: center;
+  margin-bottom: 5px;
+  font-family: "Indie Flower", cursive;
+  font-weight: bold;
+}
+.preview-image {
+  border: 1px solid black;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+.modal-content {
+  border: none !important;
+  padding: 10px 0;
+}
+.modal-content-name,
+.modal-content-desc {
+  font-family: "Indie Flower", cursive;
+  text-align: center;
+  margin-top: 20px;
+}
+.modal__recipe__name-input,
+.modal__recipe__desc-textarea {
+  padding: 5px;
+  font-family: sans-serif;
+}
+.modal__recipe__desc-textarea {
+  height: 200px;
+}
+.modal-content-desc {
+  margin-top: 15px;
+}
+.upload-image-btn {
+  width: 50%;
+  height: 100%;
+  margin-top: 10px;
+  align-self: center;
+}
+.image-preview {
+  border: none;
+  width: 220px;
+  height: 220px;
+  align-self:center
+}
