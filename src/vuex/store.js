@@ -16,7 +16,9 @@ export const store = new Vuex.Store({
   },
   mutations: {
     setUserProfile(state, val) {
-      state.userProfile = val
+      state.userProfile = val;
+      state.userProfile['id'] = fb.auth.currentUser.uid;
+      console.log(state.userProfile);
     }
   },
   actions: {
@@ -33,13 +35,14 @@ export const store = new Vuex.Store({
 
     },
 
-    async logout({commit}) {
+    async logout({state, commit}) {
 
       // odjavimo korisnika sa fb
       await fb.auth.signOut();
 
       // resetujemo
-      commit('setUserProfile', {});
+      // commit('setUserProfile', {});
+      state.userProfile = {};
       router.push('/login');
 
     },
@@ -83,9 +86,14 @@ export const store = new Vuex.Store({
       try {
         let allMeatRecipesSnapshot = await meatRecipesRef.get();
         state.meatCollection = [];
-        allMeatRecipesSnapshot.forEach(doc => {
+        allMeatRecipesSnapshot.forEach(async doc => {
           const singleMeatRecipe = doc.data();
           singleMeatRecipe["id"] = doc.id;
+          let userId = singleMeatRecipe.userId;
+          let userProfile = await fb.usersCollection.doc(userId).get();
+         // console.log(userProfile.data().name + ' ' + userProfile.data().lastName); // ! radi
+          singleMeatRecipe["firstName"] = await userProfile.data().name;
+          singleMeatRecipe["lastName"] = await userProfile.data().lastName;
           state.meatCollection.push(singleMeatRecipe);
           console.log(singleMeatRecipe);
         })

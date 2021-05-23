@@ -110,44 +110,14 @@ import UpdatePastaRecipeDialog from '../dialogs/pastaRecipes-dialogs/UpdatePasta
 import AddPastaRecipeDialog from '../dialogs/pastaRecipes-dialogs/AddPastaRecipeDialog';
 import InfoPastaRecipeDialog from '../dialogs/pastaRecipes-dialogs/InfoPastaRecipeDialog';
 import { mapState } from "vuex";
+import { recipeMixin } from "../../mixins/recipeMixin";
+import { userMixin } from "../../mixins/userMixin";
 export default {
   components: {
     'app-delete-pasta-recipe-dialog': DeletePastaRecipeDialog,
     'app-update-pasta-recipe-dialog': UpdatePastaRecipeDialog,
     'app-add-pasta-recipe-dialog': AddPastaRecipeDialog,
     'app-info-pasta-recipe-dialog': InfoPastaRecipeDialog
-  },
-  data() {
-    return {
-      filterText: '',
-      itemForDelete: {},
-      itemForInfo: {},
-      itemForUpdate: {},
-      showDeleteModal: false,
-      showInfoModal: false,
-      showUpdateModal: false,
-      showAddModal: false,
-      showAddModal: false,
-      copyOfItemForUpdate: {}
-    };
-  },
-  methods: {
-    onDeleteIcon(recipe) {
-      this.itemForDelete = recipe;
-      this.showDeleteModal = true;
-    },
-    onUpdateIcon(recipe) {
-      this.itemForUpdate = recipe;
-      this.showUpdateModal = true;
-      this.copyOfItemForUpdate = Object.assign({}, recipe);
-    },
-    onAddIcon() {
-      this.showAddModal = true;
-    },
-    showInfo(recipe) {
-      this.itemForInfo = recipe;
-      this.showInfoModal = true;
-    },
   },
   computed: {
     ...mapState(["pastaCollection"]),
@@ -158,6 +128,10 @@ export default {
       })
     }
   },
+  mixins: [
+    recipeMixin,
+    userMixin
+  ],
   mounted() {
     this.$store.dispatch("getPastaCollection");
   },

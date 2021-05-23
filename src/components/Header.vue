@@ -22,19 +22,23 @@
 </template>
 
 <script>
-  import {mapState} from 'vuex';
+  import { userMixin } from '../mixins/userMixin';
   export default {
     methods: {
       logout() {
         this.$store.dispatch('logout');
       }
     },
-    computed: {
-      ...mapState(['userProfile']),
-      isLoggedIn() {
-        return Object.keys(this.userProfile).length > 1
-      }
-    }
+    mixins: [
+      userMixin
+    ]
+    // ! umesto computed-a, sada koristimo mixin iz userMixin-a
+    // computed: {
+    //   ...mapState(['userProfile']),
+    //   isLoggedIn() {
+    //     return Object.keys(this.userProfile).length > 1
+    //   }
+    // }
   }
 </script>
 

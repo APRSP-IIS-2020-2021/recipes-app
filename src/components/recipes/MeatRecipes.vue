@@ -8,7 +8,7 @@
         type="text">
     </div>
     <div class="all-recipes">
-      <div class="add-recipe-button-wrapper">
+      <div v-if="isLoggedIn" class="add-recipe-button-wrapper">
         <button @click="onAddIcon" type="button" class="btn btn-warning">
           Add new Recipe
           <svg
@@ -33,12 +33,13 @@
         :key="recipe.id"
         class="single-recipe-card">
         <h1 class="recipe-name">{{ recipe.name }}</h1>
+        <h5>Created by: {{recipe.firstName}} {{recipe.lastName}}</h5>
         <br />
         <img class="recipe-img" :src="recipe.src" />
         <h4 @click="showInfo(recipe)" class="recipe-show-desc">
           Click here to read Recipe Description
         </h4>
-        <div class="action-buttons">
+        <div v-if="loggedUser(recipe)" class="action-buttons">
           <svg
             @click="onUpdateIcon(recipe)"
             xmlns="http://www.w3.org/2000/svg"
@@ -110,44 +111,14 @@ import UpdateMeatRecipeDialog from '../dialogs/meatRecipes-dialogs/UpdateMeatRec
 import AddMeatRecipeDialog from '../dialogs/meatRecipes-dialogs/AddMeatRecipeDialog.vue';
 import InfoMeatRecipeDialog from '../dialogs/meatRecipes-dialogs/InfoMeatRecipeDialog.vue';
 import { mapState } from "vuex";
+import { userMixin } from "../../mixins/userMixin";
+import { recipeMixin } from "../../mixins/recipeMixin";
 export default {
   components: {
     'app-delete-meat-recipe-dialog': DeleteMeatRecipeDialog,
     'app-update-meat-recipe-dialog': UpdateMeatRecipeDialog,
     'app-add-meat-recipe-dialog': AddMeatRecipeDialog,
     'app-info-meat-recipe-dialog': InfoMeatRecipeDialog
-  },
-  data() {
-    return {
-      filterText: '',
-      itemForDelete: {},
-      itemForInfo: {},
-      itemForUpdate: {},
-      showDeleteModal: false,
-      showInfoModal: false,
-      showUpdateModal: false,
-      showAddModal: false,
-      showAddModal: false,
-      copyOfItemForUpdate: {}
-    };
-  },
-  methods: {
-    onDeleteIcon(recipe) {
-      this.itemForDelete = recipe;
-      this.showDeleteModal = true;
-    },
-    onUpdateIcon(recipe) {
-      this.itemForUpdate = recipe;
-      this.showUpdateModal = true;
-      this.copyOfItemForUpdate = Object.assign({}, recipe);
-    },
-    onAddIcon() {
-      this.showAddModal = true;
-    },
-    showInfo(recipe) {
-      this.itemForInfo = recipe;
-      this.showInfoModal = true;
-    },
   },
   computed: {
     ...mapState(["meatCollection"]),
@@ -156,8 +127,16 @@ export default {
         let name = item.name.toLowerCase();
         return name.match(this.filterText);
       })
-    }
+    },
+    // ! umesto computed-a, sada koristimo mixin iz userMixin-a
+    // isLoggedIn() {
+    //   return Object.keys(this.userProfile).length > 1
+    // }
   },
+  mixins: [
+    userMixin,
+    recipeMixin
+  ],
   mounted() {
     this.$store.dispatch("getMeatCollection");
   },

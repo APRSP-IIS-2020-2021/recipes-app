@@ -110,6 +110,8 @@ import UpdateVeggieRecipeDialog from '../dialogs/veggieRecipes-dialogs/UpdateVeg
 import AddVeggieRecipeDialog from '../dialogs/veggieRecipes-dialogs/AddVeggieRecipeDialog';
 import InfoVeggieRecipeDialog from '../dialogs/veggieRecipes-dialogs/InfoVeggieRecipeDialog';
 import { mapState } from "vuex";
+import { recipeMixin } from "../../mixins/recipeMixin";
+import { userMixin } from "../../mixins/userMixin";
 export default {
   components: {
     'app-delete-veggie-recipe-dialog': DeleteVeggieRecipeDialog,
@@ -117,38 +119,10 @@ export default {
     'app-add-veggie-recipe-dialog': AddVeggieRecipeDialog,
     'app-info-veggie-recipe-dialog': InfoVeggieRecipeDialog
   },
-  data() {
-    return {
-      filterText: '',
-      itemForDelete: {},
-      itemForInfo: {},
-      itemForUpdate: {},
-      showDeleteModal: false,
-      showInfoModal: false,
-      showUpdateModal: false,
-      showAddModal: false,
-      showAddModal: false,
-      copyOfItemForUpdate: {}
-    };
-  },
-  methods: {
-    onDeleteIcon(recipe) {
-      this.itemForDelete = recipe;
-      this.showDeleteModal = true;
-    },
-    onUpdateIcon(recipe) {
-      this.itemForUpdate = recipe;
-      this.showUpdateModal = true;
-      this.copyOfItemForUpdate = Object.assign({}, recipe);
-    },
-    onAddIcon() {
-      this.showAddModal = true;
-    },
-    showInfo(recipe) {
-      this.itemForInfo = recipe;
-      this.showInfoModal = true;
-    },
-  },
+  mixins: [
+    recipeMixin,
+    userMixin
+  ],
   computed: {
     ...mapState(["veggieCollection"]),
     filteredRecipes() {
